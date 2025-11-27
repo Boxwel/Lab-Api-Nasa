@@ -43,7 +43,6 @@ function mostrarResultado(data) {
   // Restablecer fondo por defecto
   document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
   
-  // Aplicar imagen de fondo solo si es una imagen
   if (data.media_type === "image" && data.url) {
     document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${data.url}')`;
     document.body.style.backgroundSize = "cover";
