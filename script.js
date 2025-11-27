@@ -40,7 +40,7 @@ async function buscarAPOD() {
   } catch (error) {
     console.error("Error:", error);
 
-    // Determinar el tipo de error
+  
     if (
       error.message.includes("404") ||
       error.message.includes("Not Found") ||
@@ -137,7 +137,6 @@ function mostrarResultado(data) {
     favoritos.innerHTML = "";
 }
 
-// ================= INICIALIZACIÓN =================
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("btn-buscar").addEventListener("click", buscarAPOD);
 
