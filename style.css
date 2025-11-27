@@ -1,0 +1,9 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url(https://cdn.wallpapersafari.com/83/71/0zOcZW.jpg);
+  background-repeat: repeat;
+}
+.card {
+    width: 30rem;
+}
