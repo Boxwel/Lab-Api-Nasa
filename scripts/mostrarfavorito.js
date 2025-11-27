@@ -54,7 +54,6 @@ export function mostrarFavorites() {
   });
 }
 
-
 export function removeFavorite(date) {
   let favs = getFavorites();
   favs = favs?.filter(f => f.date !== date);
