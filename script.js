@@ -90,21 +90,8 @@ async function buscarAPOD() {
 // ======== MOSTRAR LA TARJETA CON LOS DATOS ========
 function mostrarResultado(data) {
   let cont = document.getElementById("resultado");
-  // 1. Error REAL al consumir la API
-  if (!data || data.error) {
-    document.body.style.backgroundImage =
-      "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
 
-    cont.innerHTML = `
-        <div class="alert alert-danger mt-3">
-            ❌ Hubo un problema al consumir la API de la NASA.<br>
-            Intenta nuevamente más tarde.
-        </div>
-    `;
-    return;
-  }
 
-  // 2. La API respondió, pero NO tiene APOD para esa fecha (undefined, sin imagen)
   if (!data.url || !data.date || !data.title) {
     document.body.style.backgroundImage =
       "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
