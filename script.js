@@ -87,6 +87,7 @@ function mostrarErrorFecha(cont) {
 // ========== MOSTRAR RESULTADO ==========
 
 function mostrarResultado(data) {
+    
     let cont = document.getElementById("resultado");
 
     if (data.media_type === "image") {
