@@ -2,123 +2,113 @@ import { guardarFavorito } from "./scripts/guardarFavoritos.js";
 import { mostrarFavorites } from "./scripts/mostrarfavorito.js";
 
 const API_KEY = "8zAXV7Tg9kZe2zftzemX6hRBwRhd5MhXn7b7av1G";
-
 let data = null;
 
-// ================= BUSCAR APOD =================
+// ================= FUNCIONES =================
 async function buscarAPOD() {
-    let cont = document.getElementById("resultado");
-    let fecha = document.getElementById("fechaInput").value;
+  let cont = document.getElementById("resultado");
+  let fecha = document.getElementById("fechaInput").value;
 
-    try {
-        if (!API_KEY) throw new Error("API_KEY_NOT_DEFINED");
+  console.log("🔍 Buscando APOD...");
 
-        const url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${fecha}`;
-        const res = await fetch(url);
-
-        if (!res.ok) throw new Error("API_REQUEST_FAILED");
-
-        data = await res.json();
-
-        // ERROR 1 → API devolvió error
-        if (!data || data.error) {
-            mostrarErrorAPI(cont);
-            return;
-        }
-
-        // ERROR 2 → No hay APOD para esa fecha
-        if (!data.url || !data.title || !data.date) {
-            mostrarErrorFecha(cont);
-            return;
-        }
-
-        // SI TODO OK → mostrar APOD
-        mostrarResultado(data);
-
-    } catch (error) {
-
-        if (error.message === "API_KEY_NOT_DEFINED") {
-            cont.innerHTML = `
-            <div class="alert alert-danger mt-3">
-                ❌ API_KEY no está definida.
-            </div>`;
-            return;
-        }
-
-        if (error.message === "API_REQUEST_FAILED") {
-            cont.innerHTML = `
-            <div class="alert alert-danger mt-3">
-                ❌ No se pudo conectar con la API de la NASA.
-            </div>`;
-            return;
-        }
-
-        cont.innerHTML = `
-        <div class="alert alert-danger mt-3">
-            ❌ Error inesperado: ${error.message}
-        </div>`;
+  try {
+    const url = fecha
+      ? `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${fecha}`
+      : `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`;
+    
+    const res = await fetch(url);
+    
+    if (!res.ok) {
+      throw new Error(`Error HTTP: ${res.status} - ${res.statusText}`);
     }
+    
+    data = await res.json();
+
+    // Verificar si la respuesta es válida y contiene datos
+    if (!data || data.error || !data.title) {
+      mostrarNoEncontrado(cont, fecha);
+      return;
+    }
+
+    mostrarResultado(data);
+  } catch (error) {
+    console.error("Error:", error);
+    mostrarError(cont, error.message);
+  }
 }
-
-
-// ========== ERRORES SEPARADOS EN FUNCIONES ==========
-
-function mostrarErrorAPI(cont) {
-    document.body.style.backgroundImage =
-        "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
-
-    cont.innerHTML = `
-        <div class="alert alert-danger mt-3">
-            ❌ Hubo un problema al consumir la API.
-        </div>`;
-}
-
-function mostrarErrorFecha(cont) {
-    document.body.style.backgroundImage =
-        "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
-
-    cont.innerHTML = `
-        <div class="alert alert-warning mt-3">
-            ⚠️ No existe APOD para esa fecha. Revisa la fecha ingresada.
-        </div>`;
-}
-
-
-// ========== MOSTRAR RESULTADO ==========
 
 function mostrarResultado(data) {
-    let cont = document.getElementById("resultado");
+  let cont = document.getElementById("resultado");
+  
+  // Restablecer fondo por defecto
+  document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
+  
+  // Aplicar imagen de fondo solo si es una imagen
+  if (data.media_type === "image" && data.url) {
+    document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${data.url}')`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundAttachment = "fixed";
+  }
 
-    if (data.media_type === "image") {
-        document.body.style.backgroundImage =
-            `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${data.url}')`;
-
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-        document.body.style.backgroundRepeat = "no-repeat";
-        document.body.style.backgroundAttachment = "fixed";
-    }
-
-    cont.innerHTML = `
-        <h3>${data.title}</h3>
-        <p><strong>Fecha:</strong> ${data.date}</p>
-        <img src="${data.url}" class="img-fluid rounded shadow-sm mb-3" />
-        <p class="text-start" style="font-size: 0.9rem;">${data.explanation}</p>
-    `;
+  cont.innerHTML = `
+    <div class="card p-3 mt-3">
+      <h3 class="text-primary">${data.title || 'Sin título'}</h3>
+      <p><strong>Fecha:</strong> ${data.date || 'No disponible'}</p>
+      ${data.url ? `<img src="${data.url}" class="img-fluid rounded shadow-sm mb-3" alt="${data.title}">` : ''}
+      <p class="text-start">${data.explanation || 'No hay descripción disponible.'}</p>
+      ${data.copyright ? `<p><small><strong>Créditos:</strong> ${data.copyright}</small></p>` : ''}
+    </div>
+  `;
 }
 
+function mostrarNoEncontrado(cont, fecha) {
+  document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
+  
+  const mensaje = fecha 
+    ? `No se encontró información para la fecha: ${fecha}`
+    : 'No se pudo cargar la información del día de hoy.';
+  
+  cont.innerHTML = `
+    <div class="alert alert-warning mt-3">
+      <i class="bi bi-exclamation-triangle"></i>
+      <strong>Información no encontrada</strong><br>
+      ${mensaje}
+      <br><small>Intenta con otra fecha o verifica tu conexión.</small>
+    </div>
+  `;
+}
 
-// ========== EVENTOS (ahora sí funcionan en módulos) ==========
+function mostrarError(cont, mensajeError) {
+  document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
+  
+  cont.innerHTML = `
+    <div class="alert alert-danger mt-3">
+      <i class="bi bi-x-circle"></i>
+      <strong>Error al cargar los datos</strong><br>
+      ${mensajeError}
+      <br><small>Por favor, intenta nuevamente.</small>
+    </div>
+  `;
+}
 
-document.getElementById("btn-buscar").addEventListener("click", buscarAPOD);
+// ================= INICIALIZACIÓN =================
+document.addEventListener('DOMContentLoaded', function() {
 
-document.getElementById("btn-favorito").addEventListener("click", () => {
-    if (data) guardarFavorito(data);
+
+  // Agregar event listeners
+  document.getElementById("btn-buscar").addEventListener("click", buscarAPOD);
+  
+  document.getElementById("btn-favorito").addEventListener("click", () => {
+    if (data) {
+      guardarFavorito(data);
+    } else {
+      alert("No hay datos para guardar como favorito.");
+    }
+  });
+
+  // Cargar datos iniciales
+  buscarAPOD();
+  mostrarFavorites();
 });
-
-document.getElementById("btn-mostrar-favoritos").addEventListener("click", () => {
-    mostrarFavorites();
-});
-
-// CARGAR APOD AL INICIAR
-buscarAPOD();
