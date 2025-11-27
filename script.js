@@ -23,15 +23,25 @@ async function buscarAPOD() {
 function mostrarResultado(data) {
     let cont = document.getElementById("resultado");
 
-    if (data.media_type !== "image") {
+    if (!data || data.error) {
         cont.innerHTML = `
-            <h3>${data.title}</h3>
-            <p><strong>Fecha:</strong> ${data.date}</p>
-            <p>El APOD de esta fecha es un video, no una imagen.</p>
-            <a href="${data.url}" target="_blank" class="btn btn-primary">Ver video</a>
+            <div class="alert alert-danger">
+                ❌ Hubo un problema al consumir la API de la NASA. Intenta nuevamente más tarde.
+            </div>
         `;
-        return;
+        return; 
     }
+
+    if (data.media_type === "image") {
+        document.body.style.backgroundImage =
+            `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${data.url}')`;
+
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.backgroundAttachment = "fixed";
+    }
+
 
     cont.innerHTML = `
         <h3>${data.title}</h3>
@@ -46,16 +56,20 @@ buscarAPOD();
 
 document.addEventListener("DOMContentLoaded", () => {
     const btnFav = document.getElementById("btn-favorito");
-console.log("ingrese al click", btnFav )
+    const btnMostrar = document.getElementById("btn-mostrar-favoritos");
+
+    console.log("ingrese al click", btnFav )
+    
     if (btnFav) {
         btnFav.addEventListener("click", () => {
             if (!data) return;
             guardarFavorito(data);
         });
     }
-    const btnMostrar = document.getElementById("btn-mostrar-favoritos");
 
-  btnMostrar.addEventListener("click", () => {
+  
+      btnMostrar.addEventListener("click", () => {
     mostrarFavorites(); 
   });
+
 });

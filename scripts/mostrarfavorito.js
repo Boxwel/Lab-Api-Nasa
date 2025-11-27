@@ -4,39 +4,47 @@ export function mostrarFavorites() {
   const cont = document.getElementById("favoritos");
   const favs = getFavorites();
 
-
-  if (favs.length === 0) {
-    cont.innerHTML = "<p>No hay favoritos guardados.</p>";
+  if (!favs?.length) {
+    Swal.fire({
+      icon: "info",
+      title: "Sin favoritos",
+      text: "No tienes elementos guardados."
+    });
     return;
   }
 
- 
   cont.innerHTML = "";
 
- 
-  favs.forEach(apod => {
+  favs?.forEach(apod => {
     const card = document.createElement("div");
     card.className = "card-favorito";
 
-    card.innerHTML = `
-      <h3>${apod.title}</h3>
-      <p>${apod.date}</p>
-      <p>${apod.explanation.slice(0, 150)}...</p>
+    const title = apod?.title || "Sin título";
+    const date = apod?.date || "Sin fecha";
+    const explanation = apod?.explanation || "";
+    const media_type = apod?.media_type || "image";
+    const url = apod?.url || apod?.hdurl || "";
+
+    const info = document.createElement("div");
+    info.innerHTML = `
+      <h3>${title}</h3>
+      <p>${date}</p>
+      <p>${explanation.slice(0, 120)}...</p>
     `;
+    card.appendChild(info);
 
-
-    if (apod.media_type === "image") {
+    if (media_type === "image") {
       const img = document.createElement("img");
-      img.src = apod.url;
-      img.alt = apod.title;
+      img.src = url;
+      img.alt = title;
       img.className = "img-fav";
       card.appendChild(img);
     } else {
       const iframe = document.createElement("iframe");
-      iframe.src = apod.url;
-      iframe.frameBorder = "0";
-      iframe.allowFullscreen = true;
+      iframe.src = url;
       iframe.className = "iframe-fav";
+      iframe.allowFullscreen = true;
+      iframe.frameBorder = "0";
       card.appendChild(iframe);
     }
 
