@@ -1,3 +1,24 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url(img/galaxy.jpg);
+  background-repeat: repeat;
+}
+
+.card {
+  width: 40rem;
+}
+
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* GRID FAVORITOS */
 #favoritos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -6,15 +27,13 @@
   padding: 1rem;
 }
 
-
 .card-favorito {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(6px);
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
+  transition: 0.2s ease;
 }
 
 .card-favorito:hover {
@@ -22,37 +41,38 @@
   box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
 
-
-.card-favorito h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.3rem;
-}
-
-
-.card-favorito p {
-  font-size: 0.85rem;
-  margin: 0.2rem 0;
-  color: #333;
-}
-
-
 .img-fav {
-  width: 40%;
+  width: 100%;
   height: 180px;
   object-fit: cover;
   border-radius: 10px;
-  margin-top: 0.7rem;
 }
 
+/* Footer */
+.footer {
+  margin-top: 14rem;
+  padding: 2rem;
+  background-color: #222;
+  color: #fff;
+}
 
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
 
-@media (max-width: 500px) {
-  #favoritos {
-    grid-template-columns: 1fr;
-  }
+.footer-col {
+  flex: 1 1 200px;
+}
 
-  .card-favorito {
-    padding: 0.8rem;
-  }
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
 }
