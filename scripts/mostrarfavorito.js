@@ -12,18 +12,16 @@ export function mostrarFavorites() {
     return;
   }
 
+   cont.innerHTML = "";
  
-  cont.innerHTML = "";
-
- 
-  favs.forEach(apod => {
+  favs?.forEach(apod => {
     const card = document.createElement("div");
     card.className = "card-favorito";
 
     card.innerHTML = `
       <h3>${apod.title}</h3>
       <p>${apod.date}</p>
-      <p>${apod.explanation.slice(0, 150)}...</p>
+      <p>${apod?.explanation?.slice(0, 150)}...</p>
     `;
 
 
@@ -47,7 +45,7 @@ export function mostrarFavorites() {
     btnEliminar.textContent = "Eliminar de favoritos";
 
     btnEliminar.addEventListener("click", () => {
-      removeFavorite(apod.date);
+      removeFavorite(apod?.date);
       card.remove(); 
     });
 
@@ -59,7 +57,7 @@ export function mostrarFavorites() {
 
 export function removeFavorite(date) {
   let favs = getFavorites();
-  favs = favs.filter(f => f.date !== date);
+  favs = favs?.filter(f => f.date !== date);
    Swal.fire({
       icon: "info",
       title: "Eliminado de favoritos",
