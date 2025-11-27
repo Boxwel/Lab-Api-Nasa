@@ -4,7 +4,6 @@ import { mostrarFavorites } from "./scripts/mostrarfavorito.js";
 const API_KEY = "8zAXV7Tg9kZe2zftzemX6hRBwRhd5MhXn7b7av1G";
 let data = null;
 
-// ================= FUNCIONES =================
 async function buscarAPOD() {
   let cont = document.getElementById("resultado");
   let fecha = document.getElementById("fechaInput").value;
@@ -18,23 +17,82 @@ async function buscarAPOD() {
     
     const res = await fetch(url);
     
+    // Verificar si la respuesta indica "no encontrado"
+    if (res.status === 404 || res.status === 400) {
+      mostrarMensaje('no-encontrado', fecha);
+      return;
+    }
+    
     if (!res.ok) {
-      throw new Error(`Error HTTP: ${res.status} - ${res.statusText}`);
+      throw new Error(`Error en la API: ${res.status} - ${res.statusText}`);
     }
     
     data = await res.json();
 
-    // Verificar si la respuesta es válida y contiene datos
-    if (!data || data.error || !data.title) {
-      mostrarNoEncontrado(cont, fecha);
+    // Verificar si los datos son válidos
+    if (!data || data.error || !data.title || data.msg === "not found") {
+      mostrarMensaje('no-encontrado', fecha);
       return;
     }
 
+    // Si todo está bien, mostrar resultado
     mostrarResultado(data);
+    
   } catch (error) {
     console.error("Error:", error);
-    mostrarError(cont, error.message);
+    
+    // Determinar el tipo de error
+    if (error.message.includes('404') || 
+        error.message.includes('Not Found') ||
+        error.message.includes('400')) {
+      mostrarMensaje('no-encontrado', fecha);
+    } else if (error.message.includes('Failed to fetch') ||
+               error.message.includes('Network')) {
+      mostrarMensaje('conexion');
+    } else {
+      mostrarMensaje('error-api', error.message);
+    }
   }
+}
+
+function mostrarMensaje(tipo, infoAdicional = '') {
+  let cont = document.getElementById("resultado");
+  
+  // Restablecer fondo por defecto
+  document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
+  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundPosition = "center";
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.backgroundAttachment = "fixed";
+
+  const mensajes = {
+    'no-encontrado': `
+      <div class="alert alert-warning mt-3 text-center">
+        <i class="bi bi-binoculars-fill display-4"></i>
+        <h4>¡Astronomía no encontrada! 🌌</h4>
+        <p><strong>No hay datos disponibles</strong> para la fecha: <code>${infoAdicional}</code></p>
+        <small class="text-muted">Intenta con una fecha entre Junio 16, 1995 y hoy.</small>
+      </div>
+    `,
+    'conexion': `
+      <div class="alert alert-danger mt-3 text-center">
+        <i class="bi bi-wifi-off display-4"></i>
+        <h4>Problema de conexión 🛰️</h4>
+        <p><strong>No se pudo conectar con la NASA</strong></p>
+        <small class="text-muted">Verifica tu conexión a internet e intenta nuevamente.</small>
+      </div>
+    `,
+    'error-api': `
+      <div class="alert alert-danger mt-3 text-center">
+        <i class="bi bi-bug-fill display-4"></i>
+        <h4>Error en la API 🚨</h4>
+        <p><strong>Problema técnico:</strong> ${infoAdicional}</p>
+        <small class="text-muted">Intenta más tarde o contacta al soporte.</small>
+      </div>
+    `
+  };
+
+  cont.innerHTML = mensajes[tipo] || mensajes['error-api'];
 }
 
 function mostrarResultado(data) {
@@ -62,35 +120,6 @@ function mostrarResultado(data) {
   `;
 }
 
-function mostrarNoEncontrado(cont, fecha) {
-  document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
-  
-  const mensaje = fecha 
-    ? `No se encontró información para la fecha: ${fecha}`
-    : 'No se pudo cargar la información del día de hoy.';
-  
-  cont.innerHTML = `
-    <div class="alert alert-warning mt-3">
-      <i class="bi bi-exclamation-triangle"></i>
-      <strong>Información no encontrada</strong><br>
-      ${mensaje}
-      <br><small>Intenta con otra fecha o verifica tu conexión.</small>
-    </div>
-  `;
-}
-
-function mostrarError(cont, mensajeError) {
-  document.body.style.backgroundImage = "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/galaxy.jpg')";
-  
-  cont.innerHTML = `
-    <div class="alert alert-danger mt-3">
-      <i class="bi bi-x-circle"></i>
-      <strong>Error al cargar los datos</strong><br>
-      ${mensajeError}
-      <br><small>Por favor, intenta nuevamente.</small>
-    </div>
-  `;
-}
 
 // ================= INICIALIZACIÓN =================
 document.addEventListener('DOMContentLoaded', function() {
