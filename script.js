@@ -133,6 +133,8 @@ function mostrarResultado(data) {
       }
     </div>
   `;
+    const favoritos = document.getElementById("favoritos");
+    favoritos.innerHTML = "";
 }
 
 // ================= INICIALIZACIÓN =================
@@ -149,6 +151,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document
     .getElementById("btn-mostrar-favoritos")
-    .addEventListener("click", mostrarFavorites());
+    .addEventListener("click", function () {
+        console.log("·hice click")
+        mostrarFavorites()
+    });
   buscarAPOD();
 });

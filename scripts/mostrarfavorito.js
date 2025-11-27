@@ -3,6 +3,7 @@ import { getFavorites, saveFavorites } from "./favoritos.js";
 export function mostrarFavorites() {
 
   const cont = document.getElementById("favoritos");
+ 
   const favs = getFavorites();
     console.log("..", favs)
 
