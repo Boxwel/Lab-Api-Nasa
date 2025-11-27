@@ -1,5 +1,9 @@
-function toggleFavorite(data) {
+import { getFavorites, saveFavorites } from "./favoritos.js";
+
+export function guardarFavorito(data) {
   let favs = getFavorites();
+
+console.log("ingrese", data)
 
   const exists = favs.some(f => f.date === data.date);
 

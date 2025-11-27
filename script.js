@@ -1,5 +1,10 @@
+import { guardarFavorito } from "./scripts/guardarFavoritos.js";
+import { mostrarFavorites } from "./scripts/mostrarfavorito.js";
+
+
 const API_KEY = "8zAXV7Tg9kZe2zftzemX6hRBwRhd5MhXn7b7av1G";
 
+let data
 async function buscarAPOD() {
     let cont = document.getElementById("resultado");
     let fecha = document.getElementById("fechaInput").value;
@@ -84,6 +89,11 @@ async function buscarAPOD() {
             </div>
         `;
     }
+
+    const res = await fetch(url);
+    data = await res.json();
+
+    mostrarResultado(data);
 }
 
 
@@ -125,3 +135,19 @@ function mostrarResultado(data) {
 
 // ======== AUTO-CARGAR APOD DE HOY ========
 buscarAPOD();
+
+document.addEventListener("DOMContentLoaded", () => {
+    const btnFav = document.getElementById("btn-favorito");
+console.log("ingrese al click", btnFav )
+    if (btnFav) {
+        btnFav.addEventListener("click", () => {
+            if (!data) return;
+            guardarFavorito(data);
+        });
+    }
+    const btnMostrar = document.getElementById("btn-mostrar-favoritos");
+
+  btnMostrar.addEventListener("click", () => {
+    mostrarFavorites(); 
+  });
+});
